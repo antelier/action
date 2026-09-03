@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: huyn7539/antelier-action@v0
+      - uses: antelier/action@v0
 ```
 
 That is all. No account, no key, no server. The next pull request gets a comment like:
