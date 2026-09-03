@@ -1,8 +1,9 @@
-name: Work Loop claim check
-description: Checks what an agent's pull request claims against what its diff actually changed, and posts one sticky comment plus a Check run.
+name: Antelier
+description: Checks what an AI coding agent's pull request claims against what its diff actually changed. Every citation resolves to diff bytes. One sticky comment, one Check, no account.
+author: Antelier
 branding:
-  icon: check-circle
-  color: gray-dark
+  icon: eye
+  color: purple
 inputs:
   data-root:
     description: Working directory for local evidence written by the check
@@ -11,7 +12,7 @@ inputs:
 runs:
   using: composite
   steps:
-    - name: Run Work Loop claim check
+    - name: Run Antelier claim check
       shell: bash
       env:
         WORKLOOP_DATA_ROOT: ${{ inputs.data-root }}
