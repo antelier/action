@@ -32,6 +32,8 @@ That is all. No account, no key, no server. The next pull request gets a comment
 > **Claim check for #42 — 5 of 8 claims checked · 4 present · 1 absent**
 > **Needs your eyes:** "Updated the `scripts` block in `package.json` …" is ABSENT — file not matched.
 
+A real example on a six-file Copilot change: [huyn7539/vscode#1](https://github.com/huyn7539/vscode/pull/1) (a fork of microsoft/vscode with the upstream PR replayed onto it).
+
 The headline always says how many of the PR's claims could be decided. Sentences that describe the situation before the change, or why it was made, are context, not claims: they are listed under the table and never labelled.
 
 Each claim in the PR description gets one row and one label:
