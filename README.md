@@ -16,13 +16,17 @@ on:
   pull_request:
     types: [opened, synchronize, edited, reopened]
   push:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
 permissions:
   contents: read
   pull-requests: write
   checks: write
 jobs:
   claim-check:
-    if: ${{ github.event_name == 'pull_request' || github.ref_name == github.event.repository.default_branch }}
+    if: ${{ github.event_name != 'push' || github.ref_name == github.event.repository.default_branch }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,6 +57,20 @@ Claims about test runs, CI results or performance are never guessed. They are sh
 ## Why
 
 Agents write confident PR descriptions. Reviewers read the description first and the diff second, if at all. A description that says "added tests" when the diff added none is the failure this catches. The comment gives the reviewer the one thing to look at before trusting the rest.
+
+## Team rules (v0.4): a correction becomes a rule with a receipt
+
+Reply on any PR, as a collaborator:
+
+```
+antelier: forbid `fallback` in packages/next/src/server/**
+antelier: require `packages/next/test/**` when packages/next/src/server/** changes
+antelier: pair `experimentalFlag` with `docsFlag` in src/**
+antelier: never add `retry` here            # "here" = the directories this PR touched
+antelier: retract <rule-id>
+```
+
+Antelier replies once with a dry run on that PR (would it fire now, cited to the diff) and the YAML block to paste into `.github/antelier/rules.yml`. Committing the file is the adoption; git blame is the provenance. From then on every PR shows, under **Rules applied**, each rule that fired with its citation and who wrote it, and when a later push removes the cause the comment records `fired on <sha>, clear on <sha>`. A fired rule turns the Check action-required. Rules load from the base branch, so a PR cannot disarm the rule it violates. The action never writes to your repository.
 
 ## What it needs
 
