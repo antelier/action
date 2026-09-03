@@ -4,6 +4,8 @@ Checks what an AI coding agent's pull request **claims** against what its diff *
 
 Every cited line resolves to bytes in the diff. Nothing is invented. One sticky comment per PR, updated in place on every push, and one Check run. Runs beside your code reviewer, not instead of it.
 
+Any agent, or a human: it checks the pull request, not the tool. Copilot, Claude Code, Codex, Cursor, Devin, Gemini, Jules, Aider and hand-written PRs get the same check; the provenance line names the author when the PR says who it was. Measured on PRs from five different agents.
+
 ## Install in one step
 
 Create `.github/workflows/antelier.yml`:
