@@ -33,7 +33,13 @@ jobs:
       - uses: antelier/action@v0
 ```
 
-That is all. No account, no key, no server. The next pull request gets a comment like:
+That is all. No account, no key, no server. The next pull request gets a comment like this:
+
+![An Antelier comment on a pull request: the headline says 4 of 6 claims checked, 3 present, 1 absent; the Needs your eyes line names the absent claim; a table lists each claim with its label and the diff hunk it cites.](docs/comment.jpg)
+
+**How to read it, in ten seconds.** Read the **Needs your eyes** line first: it names the one claim the diff does not back. Open the table only if you disagree. Rows under "context" are sentences about the situation before the change; they are never labelled. A PR whose description makes no checkable claim gets a neutral Check and no comment. Team rules fire regardless of the description.
+
+The headline looks like:
 
 > **Claim check for #42 — 5 of 8 claims checked · 4 present · 1 absent**
 > **Needs your eyes:** "Updated the `scripts` block in `package.json` …" is ABSENT — file not matched.
