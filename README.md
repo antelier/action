@@ -78,6 +78,14 @@ antelier: retract <rule-id>
 
 Antelier replies once with a dry run on that PR (would it fire now, cited to the diff) and the YAML block to paste into `.github/antelier/rules.yml`. Committing the file is the adoption; git blame is the provenance. From then on every PR shows, under **Rules applied**, each rule that fired with its citation and who wrote it, and when a later push removes the cause the comment records `fired on <sha>, clear on <sha>`. A fired rule turns the Check action-required. Rules load from the base branch, so a PR cannot disarm the rule it violates. The action never writes to your repository.
 
+## Inputs
+
+| Input | Required | Default | What it does |
+|---|---|---|---|
+| `data-root` | no | `${{ github.workspace }}` | Directory where the check writes its local evidence (the fetched patch, the rendered comment) during the run. Nothing is written back to the repository. |
+
+No token input: the workflow's own `GITHUB_TOKEN` is used, with the permissions listed below.
+
 ## What it needs
 
 Only the workflow's own `GITHUB_TOKEN`. The runner's `gh` CLI is used for reads and for the comment and Check writes. Your code never leaves the runner.
