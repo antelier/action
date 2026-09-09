@@ -23,7 +23,7 @@ jobs:
       - name: Verify release artifact hash
         run: node -e "const fs=require('fs'),c=require('crypto'),a=require('assert/strict'),m=require('./dist/manifest.json');a.equal(c.createHash('sha256').update(fs.readFileSync('dist/index.js')).digest('hex'),m.sha256)"
       - name: Run the actual composite Action
-        uses: ./
+        uses: antelier/action@1026ddd3cc5b3528f09b0a1aa735487ac9ff821e
 
   denied-write:
     if: github.event.pull_request.head.repo.full_name == github.repository
