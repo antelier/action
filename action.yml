@@ -1,5 +1,5 @@
 name: Antelier
-description: Checks what an AI coding agent's pull request claims against what its diff actually changed. Every citation resolves to diff bytes. One sticky comment, one Check, no account.
+description: Checks PR claims against changed source, with cited evidence in one updated comment and Check.
 author: Antelier
 branding:
   icon: eye
