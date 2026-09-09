@@ -1,0 +1,26 @@
+name: Verify Action candidate
+on:
+  pull_request:
+    types: [opened, synchronize, edited, reopened]
+    paths: ['docs/verification/**']
+permissions:
+  contents: read
+  pull-requests: write
+  checks: write
+jobs:
+  actual-action:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 1026ddd3cc5b3528f09b0a1aa735487ac9ff821e
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.1'
+      - name: Verify release artifact hash
+        run: node -e "const fs=require('fs'),c=require('crypto'),a=require('assert/strict'),m=require('./dist/manifest.json');a.equal(c.createHash('sha256').update(fs.readFileSync('dist/index.js')).digest('hex'),m.sha256)"
+      - name: Run the actual composite Action
+        uses: ./
