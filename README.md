@@ -102,3 +102,18 @@ Only the workflow's own `GITHUB_TOKEN`. The runner's `gh` CLI is used for reads 
 Measured on 30 external agent PRs (oxc, next.js, home-assistant, vscode and others) against a two-labeller golden set: present precision 0.76, absent precision 1.0, contradicted precision 1.0, fabricated citations 0. Methodology and numbers will be published with each release.
 
 Source-available, run-only license; see LICENSE.md. Feedback: open an issue here.
+
+
+## Release verification
+
+Build maintainers can reproduce `dist/index.js` with Node 22 and the authorized engine checkout's pinned esbuild 0.28.1:
+
+```sh
+node scripts/build.cjs /path/to/engine-checkout
+```
+
+The manifest records the engine revision and artifact hash. Test-only modules are excluded. The engine checkout is not part of this distribution.
+
+Citation links open the compared revisions at the cited file; the displayed hunk identifies the relevant source. A linked citation is evidence for that statement, not proof that the application runs correctly.
+
+Fork pull requests normally receive a read-only GitHub token, so this workflow cannot publish comments or Checks there. Do not switch to `pull_request_target` and execute fork code to get around that restriction. Repository policy can also deny writes; inspect the workflow failure before changing permissions. Remove the workflow file to stop future checks; existing GitHub comments remain.
