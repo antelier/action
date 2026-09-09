@@ -23,4 +23,32 @@ jobs:
       - name: Verify release artifact hash
         run: node -e "const fs=require('fs'),c=require('crypto'),a=require('assert/strict'),m=require('./dist/manifest.json');a.equal(c.createHash('sha256').update(fs.readFileSync('dist/index.js')).digest('hex'),m.sha256)"
       - name: Run the actual composite Action
-        uses: ./
+        uses: antelier/action@1026ddd3cc5b3528f09b0a1aa735487ac9ff821e
+
+  denied-write:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: read
+      checks: read
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: 1026ddd3cc5b3528f09b0a1aa735487ac9ff821e
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.1'
+      - name: Verify a denied write is reported as a failure
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          WORKLOOP_DATA_ROOT: ${{ github.workspace }}
+        shell: bash
+        run: |
+          if node dist/index.js > denial.log 2>&1; then
+            echo 'Expected the read-only token to refuse publication.'
+            exit 1
+          fi
+          grep -Eq 'HTTP 403|Resource not accessible by integration' denial.log

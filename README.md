@@ -2,7 +2,7 @@
 
 Checks what an AI coding agent's pull request **claims** against what its diff **actually changed**.
 
-Every cited line resolves to bytes in the diff. Nothing is invented. One sticky comment per PR, updated in place on every push, and one Check run. Runs beside your code reviewer, not instead of it.
+Citations are checked against the fetched diff before rendering. One sticky comment per PR, updated in place on every push, and one Check run. Runs beside your code reviewer, not instead of it.
 
 Any agent, or a human: it checks the pull request, not the tool. Copilot, Claude Code, Codex, Cursor, Devin, Gemini, Jules, Aider and hand-written PRs get the same check; the provenance line names the author when the PR says who it was. Measured on PRs from five different agents.
 
@@ -41,8 +41,8 @@ That is all. No account, no key, no server. The next pull request gets a comment
 
 The headline looks like:
 
-> **Claim check for #42 — 5 of 8 claims checked · 4 present · 1 absent**
-> **Needs your eyes:** "Updated the `scripts` block in `package.json` …" is ABSENT — file not matched.
+> **Claim check for #42 â€” 5 of 8 claims checked Â· 4 present Â· 1 absent**
+> **Needs your eyes:** "Updated the `scripts` block in `package.json` â€¦" is ABSENT â€” file not matched.
 
 A real example on a six-file Copilot change: [huyn7539/vscode#1](https://github.com/huyn7539/vscode/pull/1) (a fork of microsoft/vscode with the upstream PR replayed onto it).
 
@@ -88,7 +88,7 @@ No token input: the workflow's own `GITHUB_TOKEN` is used, with the permissions 
 
 ## What it needs
 
-Only the workflow's own `GITHUB_TOKEN`. The runner's `gh` CLI is used for reads and for the comment and Check writes. Your code never leaves the runner.
+Only the workflow's own `GITHUB_TOKEN`. The runner's `gh` CLI reads GitHub and publishes the comment and Check. No model provider receives your source in this build. The GitHub comment can contain quoted claims and source snippets; local evidence stays on the runner.
 
 ## What it does not do (yet)
 
