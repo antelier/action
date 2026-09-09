@@ -1,0 +1,13 @@
+﻿const fs=require('fs'),path=require('path'),http=require('http'),cp=require('child_process'),assert=require('assert/strict');
+const root=path.resolve('package-acceptance'),cli=path.join(root,'node_modules/antelier/dist/cli.js');
+let broken=false;
+const server=http.createServer((req,res)=>{res.setHeader('content-type','text/html');res.end('<!doctype html><title>Antelier local acceptance app</title><h1>Release fixture</h1><button onclick="document.querySelector(\'output\').textContent=\''+(broken?'Failed':'Saved')+'\'">Save</button><output>Ready</output>');});
+const run=args=>new Promise(resolve=>{const p=cp.spawn(process.execPath,[cli,...args],{cwd:root,env:{...process.env},windowsHide:true});let stdout='',stderr='';p.stdout.on('data',x=>stdout+=x);p.stderr.on('data',x=>stderr+=x);p.on('close',code=>resolve({code,stdout,stderr}));});
+(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));const port=server.address().port;
+fs.writeFileSync(path.join(root,'journeys.yml'),`version: 1\nname: Local package acceptance\napp: http://127.0.0.1:${port}\nsupabase: {}\nusers: {}\njourneys:\n  - name: Save reports success\n    steps:\n      - goto: /\n      - click: { text: Save }\n      - expect: { text: Saved }\n`);
+const configHash=require('crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'journeys.yml'))).digest('hex');
+const good=await run(['journeys','run','--config','journeys.yml','--report','green','--json']);assert.equal(good.code,0,good.stderr);const green=JSON.parse(good.stdout);assert.equal(green.identities.checked,false);
+broken=true;const bad=await run(['journeys','run','--config','journeys.yml','--report','red','--json']);assert.equal(bad.code,1,bad.stderr);const red=JSON.parse(bad.stdout);assert.ok(red.journeys.some(j=>j.steps.some(s=>s.error)), 'Defect must retain a failed step');
+assert.equal(require('crypto').createHash('sha256').update(fs.readFileSync(path.join(root,'journeys.yml'))).digest('hex'),configHash);
+const out={scope:'Public package installation, controlled local app in CI; not stranger use', platform:process.platform,greenExit:good.code,redExit:bad.code,unchangedExpectations:true,noAdminKey:true,identityStatus:green.identities,greenReport:path.join(root,'green/report.html'),redReport:path.join(root,'red/report.html'),failedSteps:red.journeys.flatMap(j=>j.steps.filter(s=>s.error))};fs.writeFileSync(path.join(root,'acceptance.json'),JSON.stringify(out,null,2));console.log(JSON.stringify(out,null,2));
+})().catch(e=>{console.error(e.message);process.exitCode=1}).finally(()=>server.close());

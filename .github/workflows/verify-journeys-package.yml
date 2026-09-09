@@ -1,0 +1,43 @@
+name: Verify public journeys package
+on:
+  push:
+    branches: ['verify/journeys-package-20260909']
+permissions:
+  contents: read
+jobs:
+  public-package:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22.23.1'
+      - name: Install the exact public package from a fresh folder
+        shell: bash
+        run: |
+          mkdir package-acceptance
+          cd package-acceptance
+          npm install --save-dev https://antelier.co/downloads/antelier-0.2.0.tgz
+          npx antelier journeys --help
+          node -e "const a=require('node:assert/strict'),p=require('./package-lock.json');a.equal(p.packages['node_modules/antelier'].integrity,'sha512-PxOg6CrEK1E87UNW5neQ4gi1jGxCoXEeSgClc24H6xhXXA+64Ae9euV9TDTkEwryS4zYn0yne16znrN3NVD9Cw==')"
+          npx --yes playwright@1.61.0 install --with-deps chromium
+      - name: Require green then red with unchanged expectations
+        run: node docs/verification/journeys-package.cjs
+      - name: Keep both reports and receipts
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: journeys-${{ matrix.os }}
+          path: |
+            package-acceptance/acceptance.json
+            package-acceptance/journeys.yml
+            package-acceptance/green/
+            package-acceptance/red/
+          retention-days: 14
