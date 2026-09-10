@@ -93,6 +93,13 @@ the app. It substitutes that number into the approved template, never falling
 back to `app`. A local reproduction is not the independent CI verdict; rerun the
 verification workflow after the correction. Keep expectations and approval intact.
 
+**This is an informational Check, not a strict acceptance gate.** GitHub accepts
+`neutral` as a successful required-check status and can show "All checks have passed"
+while the Antelier comment says partial or not runnable. Requiring this Check does
+not currently require verified browser behavior. A strict merge policy for incomplete
+coverage must be implemented and tested before offering that guarantee.
+[GitHub required-check behavior](https://docs.github.com/en/pull-requests/how-tos/merge-and-close-pull-requests/troubleshooting-required-status-checks).
+
 The browser worker receives a small environment allowlist, without GitHub tokens,
 Actions runtime tokens, cloud keys or administrative database credentials. It
 contacts the approved app and configured backend origins. The parent job reads
