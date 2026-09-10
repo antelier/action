@@ -1,10 +1,10 @@
 {
-  "source_commit": "be0bbc665f0ef697a7504e24588a7baecea55942",
+  "source_commit": "0d6cfa8c97efe28061f142cd314799da1bb529f5",
   "esbuild": "0.28.1",
   "target": "node22",
   "test_modules_excluded": true,
-  "bytes": 714585,
-  "sha256": "a78380b1b6461d33ee082846f77f082e3c86edcafbc69f8106bf14d1fe2f8594",
+  "bytes": 755744,
+  "sha256": "5698a379c7b20ff9edb10a73e900a7709d0f6146382c236b1a8124ab99868bce",
   "external_imports": [
     "node:fs",
     "node:path",
@@ -16,6 +16,7 @@
     "child_process",
     "fs",
     "node:child_process",
+    "node:os",
     "node:https",
     "node:http"
   ]
