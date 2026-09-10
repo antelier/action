@@ -1,8 +1,9 @@
 # Execution receipts on a pull request
 
-This integration is under local validation. It is not included in the currently
-published Action. Do not replace a working install with the example until the
-Action release contains `verify` and `publish` modes.
+This integration is an experimental branch candidate. Controlled live fork PRs
+have exercised CI and browser receipts; the public `v0` release does not include
+these modes. Existing installs remain unchanged. Customer onboarding and real
+preview-provider integration are not established by this rehearsal.
 
 Antelier reads the completed CI result for the exact PR head, then exercises the
 browser scenarios your default branch already approves. The PR comment separates
@@ -30,7 +31,7 @@ and merge those files through the team's ordinary review process. PR description
 cannot grant approval or choose the preview URL. A failed run never rewrites the
 approved expectations. Drift suggestions remain unapproved patches in the report.
 
-Use the example in `github-app/execution-workflow.example.yml` after release.
+Use the example in [`execution-workflow.example.yml`](execution-workflow.example.yml) after release.
 Set the existing CI workflow's name and exact file path, and pin the released
 Antelier Action commit in both jobs. The workflow must live on the default branch.
 It does not check out PR code. The verifier uses read permissions; only the
@@ -60,3 +61,13 @@ the team's agent can reproduce it using the same preview revision and accounts.
 This integration does not automatically repair arbitrary defects, run missing
 named tests, or turn issue/description text into approved expectations. Those are
 remaining Phase 1 work, not capabilities established by a successful CI result.
+
+## Recorded controlled rehearsal
+
+[The owner-operated fork PR](https://github.com/huyn7539/antelier-journeys-testbed/pull/1)
+contains the live sticky comment. Its run history includes passing CI, failing CI,
+a stale old-head refusal, and a Linux browser defect while CI remains green.
+The preview is synthetic and runner-local; deployment metadata and approval are
+fixture inputs. This establishes workflow wiring, not customer adoption or a
+production preview integration. The candidate bundle used for the browser defect
+is `80db3dec9588fb1988a06e698b7da8693424f50c`.
