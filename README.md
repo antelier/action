@@ -1,9 +1,14 @@
 # Antelier
 
-**Local unreleased candidate:** `verify` and `publish` modes add approved browser
+**Experimental branch candidate:** `verify` and `publish` modes add approved browser
 journey receipts to the PR comment. See [setup and current limits](EXECUTION-VERIFICATION.md)
 and [the workflow template](execution-workflow.example.yml). The existing `v0` tag
-does not contain this integration. Live GitHub validation and release are pending.
+does not contain this integration. A controlled live fork rehearsal has passed;
+real preview-provider onboarding, stranger validation and release remain open.
+The candidate uses one copied workflow file with separate read-only verification
+and write-only publication roles, and combines execution and diff evidence in one
+sticky comment. Missing app revision endpoints produce partial browser observations,
+never certification of the PR revision. The claim-only release is documented below.
 
 Checks what an AI coding agent's pull request **claims** against what its diff **actually changed**.
 

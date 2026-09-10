@@ -1,10 +1,10 @@
 {
-  "source_commit": "e72aa5203afa2c44b97e6b45da38d3bc34de68aa",
+  "source_commit": "83b5b0db9dde5f751bdaa9add290d7c5757096f3",
   "esbuild": "0.28.1",
   "target": "node22",
   "test_modules_excluded": true,
-  "bytes": 803757,
-  "sha256": "83bf44503f608c1eefe8e4939a6019d0cede927db4e271dd4334b2788f3bb94b",
+  "bytes": 805186,
+  "sha256": "8d525e4df39260d125be42e714c6ec453aa476ec21bd7b2453361a88e170d102",
   "external_imports": [
     "node:fs",
     "node:path",
@@ -21,8 +21,8 @@
     "node:http"
   ],
   "worker": {
-    "bytes": 103479,
-    "sha256": "8c3e1620040b099168f2060e3f8cd1ef6a50c8a998dd59a31f9fd16b3c1b8f63"
+    "bytes": 110048,
+    "sha256": "d5951bf6bfba615e8880a6188172de2b56f7ab9e903ee3bbe93a11c383197621"
   },
   "playwright_core": "1.61.0",
   "vendor_manifest_sha256": "95de040a1903adc55854032c911489c29cf67c47fab52012958fef2ee663d2e9"

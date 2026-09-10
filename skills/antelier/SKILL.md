@@ -15,6 +15,26 @@ For an app, run `npx antelier journeys suggest` to draft journeys from local scr
 
 Keep PR descriptions as local drafts unless publishing or updating the PR is authorized. None of these three commands posts a PR description automatically.
 
+## Follow an execution receipt through a correction
+
+When an Antelier comment contains a failed approved scenario, read its revision,
+environment, policy revision, failing step and artifact before changing code. Verify
+the installed CLI supports `antelier journeys run --help`; a missing command is
+not run, not a passing check. Use the project's approved configuration and disposable
+test accounts, then run the receipt's reproduction command against the same authorized
+preview. Preserve the original report and classify runner/setup interference separately.
+
+Investigate the failed assertion and prepare a bounded correction in the team's normal
+branch or PR workflow. Do not change the accepted expectation or approval hash to make
+the correction pass. If the expectation itself is wrong, propose that change for owner
+review and leave the original failure visible. Name the model used for investigation.
+
+Rerun the same approved scenario against the corrected preview; attach both receipts
+and exact revisions. Only the independent execution result changes the verdict. A
+`revision unverified` result remains partial even if every step passes. A screenshot,
+an agent statement or an unrelated green CI workflow is not proof that the fix worked.
+Do not merge, deploy, publish or access a production database without task authorization.
+
 ## Diagram authority
 
 Antelier observes only architecture: bounded static imports in JS/TS/Python/Rust at Git revisions, with file and line citations. Roles inferred from paths are heuristics, not deployment facts. Preserve the extractor's scope and limitations.
