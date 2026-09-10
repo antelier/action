@@ -23,6 +23,10 @@ the installed CLI supports `antelier journeys run --help`; a missing command is
 not run, not a passing check. Use the project's approved configuration and disposable
 test accounts, then run the receipt's reproduction command against the same authorized
 preview. Preserve the original report and classify runner/setup interference separately.
+For a numbered-preview config, preserve the receipt's `--preview-pr <number>`.
+Never remove it or fall back to the config's fixed `app` URL. If the installed CLI
+does not support that option, report the reproduction as not run and obtain the
+reviewed candidate or wait for its release; do not silently substitute a command.
 
 Investigate the failed assertion and prepare a bounded correction in the team's normal
 branch or PR workflow. Do not change the accepted expectation or approval hash to make

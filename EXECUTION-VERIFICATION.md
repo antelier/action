@@ -85,6 +85,14 @@ later to establish the revision before and after execution. A partial result is
 neutral, never a green merge certificate; a failed observed step includes its
 reproduction even when revision attribution is unavailable.
 
+For a numbered-preview reproduction, use the candidate CLI's
+`antelier journeys run --config .antelier/journeys.yml --no-ensure --preview-pr 123`.
+Check `--help` first: the public npm release may not have this option. The CLI
+refuses a numbered-preview config without a positive PR number before contacting
+the app. It substitutes that number into the approved template, never falling
+back to `app`. A local reproduction is not the independent CI verdict; rerun the
+verification workflow after the correction. Keep expectations and approval intact.
+
 The browser worker receives a small environment allowlist, without GitHub tokens,
 Actions runtime tokens, cloud keys or administrative database credentials. It
 contacts the approved app and configured backend origins. The parent job reads

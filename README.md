@@ -6,7 +6,7 @@ and [the workflow template](execution-workflow.example.yml). The existing `v0` t
 does not contain this integration. A controlled live fork rehearsal has passed;
 real preview-provider onboarding, stranger validation and release remain open.
 The candidate uses one copied workflow file with separate read-only verification
-and write-only publication roles, and combines execution and diff evidence in one
+and receipt-publication jobs, and combines execution and diff evidence in one
 sticky comment. Missing app revision endpoints produce partial browser observations,
 never certification of the PR revision. The claim-only release is documented below.
 
