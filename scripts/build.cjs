@@ -13,6 +13,21 @@ const strip={name:"strip-test-modules",setup(b){b.onResolve({filter:/\.test(?:\.
  const imports=[...new Set(Object.values(result.metafile.inputs).flatMap(v=>v.imports.filter(i=>i.external).map(i=>i.path)))];
  if(imports.some(p=>p==="node:test"||p==="node:assert/strict"||p.startsWith(".")))throw Error("Unexpected runtime import: "+imports.join(","));
  const bytes=fs.readFileSync(file);
- const manifest={source_commit:commit,esbuild:esbuild.version,target:"node22",test_modules_excluded:true,bytes:bytes.length,sha256:crypto.createHash("sha256").update(bytes).digest("hex"),external_imports:imports};
+ const workerFile=path.join(out,"dist/journey-worker.js");
+ await esbuild.build({absWorkingDir:root,entryPoints:["github-app/journey-worker.js"],bundle:true,platform:"node",target:"node22",minify:true,legalComments:"none",outfile:workerFile,external:["playwright-core"],plugins:[strip]});
+ const vendor=path.join(root,"node_modules/playwright-core"),destination=path.join(out,"dist/node_modules/playwright-core");
+ const version=JSON.parse(fs.readFileSync(path.join(vendor,"package.json"),"utf8")).version;
+ // Vendor the pinned browser driver, including its licenses, but no browser
+ // binary. No package manager or PR dependency install runs in either job.
+ if(version!=="1.61.0")throw Error("playwright-core 1.61.0 is required");
+ if(fs.existsSync(destination))throw Error("Build into a clean output checkout; vendored driver already exists");
+ fs.cpSync(vendor,destination,{recursive:true,dereference:false});
+ const vendorFiles=[];
+ function inventory(dir,prefix=""){for(const entry of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){const name=prefix+entry.name,p=path.join(dir,entry.name);if(entry.isSymbolicLink())throw Error("Unexpected vendor symlink");if(entry.isDirectory())inventory(p,name+"/");else{const data=fs.readFileSync(p);vendorFiles.push({path:name,bytes:data.length,sha256:crypto.createHash("sha256").update(data).digest("hex")});}}}
+ inventory(destination);
+ fs.writeFileSync(path.join(out,"dist/vendor-manifest.json"),JSON.stringify(vendorFiles,null,2)+"\n");
+ const workerBytes=fs.readFileSync(workerFile);
+ const manifest={source_commit:commit,esbuild:esbuild.version,target:"node22",test_modules_excluded:true,bytes:bytes.length,sha256:crypto.createHash("sha256").update(bytes).digest("hex"),external_imports:imports,
+ worker:{bytes:workerBytes.length,sha256:crypto.createHash("sha256").update(workerBytes).digest("hex")},playwright_core:version,vendor_manifest_sha256:crypto.createHash("sha256").update(fs.readFileSync(path.join(out,"dist/vendor-manifest.json"))).digest("hex")};
  fs.writeFileSync(path.join(out,"dist/manifest.json"),JSON.stringify(manifest,null,2)+"\n");console.log(JSON.stringify(manifest,null,2));
 })().catch(e=>{console.error(e.message);process.exitCode=1});

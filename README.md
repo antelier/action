@@ -1,5 +1,10 @@
 # Antelier
 
+**Local unreleased candidate:** `verify` and `publish` modes add approved browser
+journey receipts to the PR comment. See [setup and current limits](EXECUTION-VERIFICATION.md)
+and [the workflow template](execution-workflow.example.yml). The existing `v0` tag
+does not contain this integration. Live GitHub validation and release are pending.
+
 Checks what an AI coding agent's pull request **claims** against what its diff **actually changed**.
 
 Citations are checked against the fetched diff before rendering. One sticky comment per PR, updated in place on every push, and one Check run. Runs beside your code reviewer, not instead of it.
@@ -113,6 +118,13 @@ node scripts/build.cjs /path/to/engine-checkout
 ```
 
 The manifest records the engine revision and artifact hash. Test-only modules are excluded. The engine checkout is not part of this distribution.
+
+The execution candidate also bundles `dist/journey-worker.js` and the pinned
+Playwright Core 1.61.0 driver under `dist/node_modules/playwright-core`. Its licenses
+and notices remain in that directory; those third-party files retain their own
+licenses. No browser binary is distributed. The manifest records the worker hash
+and a digest of the per-file vendor inventory. Build from a clean output checkout;
+the builder refuses to overwrite an existing vendored driver tree.
 
 Citation links open the compared revisions at the cited file; the displayed hunk identifies the relevant source. A linked citation is evidence for that statement, not proof that the application runs correctly.
 

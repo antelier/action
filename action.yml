@@ -1,20 +1,41 @@
 name: Antelier
-description: Checks PR claims against changed source, with cited evidence in one updated comment and Check.
-author: Antelier
-branding:
-  icon: eye
-  color: purple
+description: Checks what an AI coding agent's pull request claims against what its diff actually changed, with citations that resolve to diff bytes
 inputs:
   data-root:
-    description: Working directory for local evidence written by the check
+    description: Working directory used by injected recording transports and local evidence
     required: false
     default: ${{ github.workspace }}
+  source-workflow:
+    description: Exact CI workflow path accepted by workflow_run publication (for example .github/workflows/ci.yml)
+    required: false
+  mode:
+    description: check, verify (read-only browser job), or publish (receipt-only write job)
+    default: check
+  receipt-path:
+    description: Downloaded receipt directory beneath RUNNER_TEMP; publish mode only
+  receipt-sha256:
+    description: Digest from needs.verify.outputs.receipt-sha256; never from the artifact
+outputs:
+  receipt-path:
+    value: ${{ steps.antelier.outputs.receipt-path }}
+    description: Directory to upload from the verifier
+  receipt-sha256:
+    value: ${{ steps.antelier.outputs.receipt-sha256 }}
+    description: Digest to pass directly to the publisher
 runs:
   using: composite
   steps:
     - name: Run Antelier claim check
+      id: antelier
       shell: bash
       env:
         WORKLOOP_DATA_ROOT: ${{ inputs.data-root }}
         GITHUB_TOKEN: ${{ github.token }}
+        ANTELIER_SOURCE_WORKFLOW: ${{ inputs.source-workflow }}
+        ANTELIER_MODE: ${{ inputs.mode }}
+        ANTELIER_RECEIPT_PATH: ${{ inputs.receipt-path }}
+        ANTELIER_RECEIPT_SHA256: ${{ inputs.receipt-sha256 }}
       run: node "$GITHUB_ACTION_PATH/dist/index.js"
+branding:
+  icon: eye
+  color: purple

@@ -1,0 +1,56 @@
+# PRE-RELEASE TEMPLATE: replace both Action refs after the verified release.
+name: Antelier execution receipts
+on:
+  workflow_run:
+    workflows: [CI] # Existing PR CI workflow name
+    types: [completed]
+permissions: {}
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      pull-requests: read
+      deployments: read
+    outputs:
+      receipt-sha256: ${{ steps.verify.outputs.receipt-sha256 }}
+    steps:
+      - uses: antelier/action@REPLACE_WITH_RELEASE_COMMIT
+        id: verify
+        with:
+          mode: verify
+          source-workflow: .github/workflows/ci.yml
+        # For configured login scenarios, add only disposable test-account env:
+        # env:
+        #   ANTELIER_USER_A: ${{ secrets.ANTELIER_USER_A }}
+        #   ANTELIER_PASS_A: ${{ secrets.ANTELIER_PASS_A }}
+      - uses: actions/upload-artifact@v4
+        if: steps.verify.outputs.receipt-sha256 != ''
+        with:
+          name: antelier-execution-${{ github.run_attempt }}
+          path: ${{ steps.verify.outputs.receipt-path }}
+          if-no-files-found: error
+          retention-days: 7
+  publish:
+    needs: verify
+    if: needs.verify.outputs.receipt-sha256 != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+      deployments: read
+      checks: write
+      pull-requests: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: antelier-execution-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/antelier-receipt
+      - uses: antelier/action@REPLACE_WITH_RELEASE_COMMIT
+        with:
+          mode: publish
+          source-workflow: .github/workflows/ci.yml
+          receipt-path: ${{ runner.temp }}/antelier-receipt
+          receipt-sha256: ${{ needs.verify.outputs.receipt-sha256 }}
