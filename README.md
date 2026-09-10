@@ -123,8 +123,8 @@ The execution candidate also bundles `dist/journey-worker.js` and the pinned
 Playwright Core 1.61.0 driver under `dist/node_modules/playwright-core`. Its licenses
 and notices remain in that directory; those third-party files retain their own
 licenses. No browser binary is distributed. The manifest records the worker hash
-and a digest of the per-file vendor inventory. Build from a clean output checkout;
-the builder refuses to overwrite an existing vendored driver tree.
+and a digest of the per-file vendor inventory. Rebuilds verify an existing vendored
+driver byte for byte and refuse if it differs from the pinned source.
 
 Citation links open the compared revisions at the cited file; the displayed hunk identifies the relevant source. A linked citation is evidence for that statement, not proof that the application runs correctly.
 

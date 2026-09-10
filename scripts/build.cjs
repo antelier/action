@@ -20,11 +20,12 @@ const strip={name:"strip-test-modules",setup(b){b.onResolve({filter:/\.test(?:\.
  // Vendor the pinned browser driver, including its licenses, but no browser
  // binary. No package manager or PR dependency install runs in either job.
  if(version!=="1.61.0")throw Error("playwright-core 1.61.0 is required");
- if(fs.existsSync(destination))throw Error("Build into a clean output checkout; vendored driver already exists");
- fs.cpSync(vendor,destination,{recursive:true,dereference:false});
+ if(!fs.existsSync(destination))fs.cpSync(vendor,destination,{recursive:true,dereference:false});
  const vendorFiles=[];
- function inventory(dir,prefix=""){for(const entry of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){const name=prefix+entry.name,p=path.join(dir,entry.name);if(entry.isSymbolicLink())throw Error("Unexpected vendor symlink");if(entry.isDirectory())inventory(p,name+"/");else{const data=fs.readFileSync(p);vendorFiles.push({path:name,bytes:data.length,sha256:crypto.createHash("sha256").update(data).digest("hex")});}}}
+ function inventory(dir,prefix="",rows=vendorFiles){for(const entry of fs.readdirSync(dir,{withFileTypes:true}).sort((a,b)=>a.name.localeCompare(b.name))){const name=prefix+entry.name,p=path.join(dir,entry.name);if(entry.isSymbolicLink())throw Error("Unexpected vendor symlink");if(entry.isDirectory())inventory(p,name+"/",rows);else{const data=fs.readFileSync(p);rows.push({path:name,bytes:data.length,sha256:crypto.createHash("sha256").update(data).digest("hex")});}}}
  inventory(destination);
+ const expectedVendor=[];inventory(vendor,"",expectedVendor);
+ if(JSON.stringify(vendorFiles)!==JSON.stringify(expectedVendor))throw Error("Vendored driver differs from pinned source; build into a clean checkout");
  fs.writeFileSync(path.join(out,"dist/vendor-manifest.json"),JSON.stringify(vendorFiles,null,2)+"\n");
  const workerBytes=fs.readFileSync(workerFile);
  const manifest={source_commit:commit,esbuild:esbuild.version,target:"node22",test_modules_excluded:true,bytes:bytes.length,sha256:crypto.createHash("sha256").update(bytes).digest("hex"),external_imports:imports,
