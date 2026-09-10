@@ -21,6 +21,7 @@ The first supported setup requires:
 - Default-branch `.antelier/EXPECTATIONS.md` approving that configuration's hash.
   Protect that branch: the approval is a reviewed file, not a digital signature.
 - Google Chrome or installed Playwright Chromium on the verification runner.
+- Node 22.13 or newer (the candidate is tested with 22.23.1).
 - Pre-created, disposable test accounts when login is required. Configure only
   `ANTELIER_USER_*` and `ANTELIER_PASS_*` for those accounts. No service-role key.
 
@@ -43,6 +44,9 @@ contacts the approved app and configured backend origins. The parent job reads
 GitHub metadata and uploads the report. Screenshots can contain application data;
 use synthetic accounts/data, especially with public repository artifacts. The
 browser connection policy is not a sandbox for an application server.
+WebSockets remain blocked in this runner. A failed scenario depending on one is
+runner interference, including sockets on the app's own origin; it cannot establish
+an app defect. Use the application's realtime tests in CI for that behavior.
 
 Each run is bounded to five minutes of browser execution. Missing setup,
 interference, timeout, changed approval, changed deployment, missing screenshots

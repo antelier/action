@@ -1,5 +1,5 @@
 {
-  "source_commit": "9dd2d27d76416b403349f1b189beffc52efdcc61",
+  "source_commit": "26bcf60ecbe08d46188b876ae4f439312bb9d653",
   "esbuild": "0.28.1",
   "target": "node22",
   "test_modules_excluded": true,
@@ -21,8 +21,8 @@
     "node:http"
   ],
   "worker": {
-    "bytes": 102868,
-    "sha256": "c2a86db3b75d42863374571105f46556e84ad4c681ecb8e280b542776bc7c1a4"
+    "bytes": 103479,
+    "sha256": "8c3e1620040b099168f2060e3f8cd1ef6a50c8a998dd59a31f9fd16b3c1b8f63"
   },
   "playwright_core": "1.61.0",
   "vendor_manifest_sha256": "95de040a1903adc55854032c911489c29cf67c47fab52012958fef2ee663d2e9"
