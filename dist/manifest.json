@@ -1,10 +1,10 @@
 {
-  "source_commit": "26bcf60ecbe08d46188b876ae4f439312bb9d653",
+  "source_commit": "f63fb3cba4ed1002940b18704a17a84fe882efab",
   "esbuild": "0.28.1",
   "target": "node22",
   "test_modules_excluded": true,
-  "bytes": 803200,
-  "sha256": "54d699d3a8728466d48900e7b930885f11c0b115dafb74cff30dafd2924d2666",
+  "bytes": 803666,
+  "sha256": "033aa5e7e6549f091a8675360e57d9a186a05f8eb84b1f7552a2431403a4d696",
   "external_imports": [
     "node:fs",
     "node:path",
