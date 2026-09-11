@@ -14,6 +14,8 @@ jobs:
       actions: read
       pull-requests: read
       deployments: read
+      statuses: read
+      checks: read
     outputs:
       receipt-sha256: ${{ steps.verify.outputs.receipt-sha256 }}
     steps:
@@ -41,6 +43,7 @@ jobs:
       contents: read
       actions: read
       deployments: read
+      statuses: read
       checks: write
       pull-requests: write
     steps:

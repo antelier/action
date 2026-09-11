@@ -13,9 +13,10 @@ counts or claim that the entire application works.
 The first supported setup requires:
 
 - Existing CI triggered by `pull_request` and a completed run for the current head.
-- A successful GitHub deployment marked transient and non-production for that head.
-- A successful deployment-status URL matching `app`, or the numeric-PR URL template
-  approved in default-branch `.antelier/journeys.yml` (example below).
+- A successful GitHub deployment marked transient and non-production for that head,
+  or the explicit provider status/Check source described below.
+- A preview URL matching `app`, or the numeric-PR URL template approved in
+  default-branch `.antelier/journeys.yml` (example below).
 - An optional `deployed.header` or `deployed.path` returning the full 40-character
   PR head SHA. When configured, it must match before and after the browser run.
   Without it, browser steps still run and produce screenshots, but the result is
@@ -51,6 +52,61 @@ code. The digest comes directly from `needs.verify.outputs`, not the artifact.
 
 ## Preview URLs without an app revision endpoint
 
+### Check setup before a CI run
+
+The candidate CLI includes a metadata-only readiness command (not yet in the
+public npm release; check `antelier journeys --help`):
+
+```sh
+antelier journeys preview --repo YOUR_ORG/YOUR_REPO --pr 123
+```
+
+Run it from the app's repository after drafting `.antelier/journeys.yml`. It reads
+the PR and its preview metadata using the signed-in GitHub CLI, without loading
+`.env`, opening the app, creating accounts or running repository commands. It
+shows the selected preview, local approval state and remaining setup. Exit 3
+means setup needs attention; exit 0 means the preview metadata and local approval
+are ready. Neither is an app acceptance result. Default-branch approval is still
+checked independently in CI. `--json` returns the same bounded result.
+
+If a preview finishes after the source CI workflow, rerun verification after the
+provider finishes. Automatic rescheduling on provider completion is not built yet.
+
+### Providers that publish statuses or Checks
+
+Some providers publish a commit status or Check instead of a GitHub Deployment.
+Configure exactly one source under the approved preview. For Netlify, replace
+`YOUR_SITE` with your site's name and keep your own journeys:
+
+```yaml
+preview:
+  url: https://deploy-preview-{pr}--YOUR_SITE.netlify.app/
+  source:
+    type: commit-status
+    context: deploy/netlify
+    creator_id: 40209326
+```
+
+The Netlify bot ID and URL shape were observed in the public
+[Vue docs PR 3461](https://github.com/vuejs/docs/pull/3461). Confirm the provider
+identity in your repository's GitHub metadata before approval. This configuration
+uses the latest status from that exact creator/context at the PR head; a newer
+failure or pending status cannot fall back to an older success. No provider API
+token is needed. The URL must exactly equal the approved template's result.
+
+For a provider Check whose `details_url` links directly to your preview, use
+`source: { type: check-run, name: "EXACT CHECK NAME", app_id: 12345 }`, replacing
+both example values with the actual provider metadata. The Check must belong to
+the current head, exact GitHub App and name, and complete successfully. A dashboard
+link, missing evidence, truncated history or wrong URL remains not runnable with
+the fix explained. The publisher rechecks the same source before posting evidence.
+
+This is not automatic support for every provider. The observed Cloudflare Workers
+Check linked to its dashboard, not its app; Vercel generated hostnames also require
+an approved URL strategy. Those cases still need provider-specific onboarding.
+Source identity and URL changes alter the expectation hash and require review.
+Preview readiness does not establish the app's running revision or behavior.
+
 For a fixed preview, `app` remains sufficient. For a numbered per-PR preview:
 
 ```yaml
@@ -68,14 +124,15 @@ journeys:
 Replace the site and scenario with your own. The URL template is part of the
 approval hash. Only `{pr}` is substituted, using the GitHub PR number; no wildcard
 host, arbitrary branch string or URL from the description is accepted. The selected
-successful, transient, non-production GitHub deployment must name the current head
-and exactly match that URL. A template is not proof of a provider integration.
+GitHub deployment or explicitly configured provider evidence must name the current
+head and exactly match that URL. The Deployment route additionally requires its
+transient/non-production flags. A template is not proof of a provider integration.
 
-Netlify documents numbered preview URLs, but may expose its preview through commit
-checks rather than the deployment API. Vercel documents generated URLs and GitHub
-deployment statuses. Automatic provider-specific check extraction, Vercel random
-hostname discovery and a provider cold-start walk remain unimplemented. A repository
-without matching deployment metadata currently gets `not runnable` with the reason.
+Netlify documents numbered preview URLs and can expose its preview through commit
+statuses. The explicit source above supports that route. Vercel documents generated
+URLs and GitHub deployment statuses. Arbitrary summary-link extraction, Vercel random
+hostname discovery and a complete provider cold-start walk remain unimplemented.
+A repository without matching configured evidence gets `not runnable` with the reason.
 See [Netlify previews](https://docs.netlify.com/deploy/deploy-types/deploy-previews/),
 [Netlify notifications](https://docs.netlify.com/deploy/deploy-notifications/) and
 [Vercel GitHub deployments](https://vercel.com/docs/git/vercel-for-github).
