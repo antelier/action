@@ -4,6 +4,10 @@ const root=path.resolve(process.argv[2]||""),out=path.resolve(__dirname,"..");
 if(!process.argv[2])throw Error("Usage: node scripts/build.cjs <authorized engine checkout>");
 const commit=cp.execFileSync("git",["rev-parse","HEAD"],{cwd:root,encoding:"utf8"}).trim();
 if(cp.execFileSync("git",["status","--porcelain","--untracked-files=no"],{cwd:root,encoding:"utf8"}).trim())throw Error("Engine tracked files must be clean");
+// The install contract travels with its engine revision; do not leave a newer
+// runtime beside stale workflow permissions or manually maintained setup docs.
+fs.copyFileSync(path.join(root,"github-app/execution-workflow.example.yml"),path.join(out,"execution-workflow.example.yml"));
+fs.writeFileSync(path.join(out,"EXECUTION-VERIFICATION.md"),fs.readFileSync(path.join(root,"docs/journeys/pr-verification.md"),"utf8").replaceAll("](../../github-app/execution-workflow.example.yml)","](execution-workflow.example.yml)"));
 const esbuild=require(path.join(root,"node_modules/esbuild"));
 if(esbuild.version!=="0.28.1")throw Error("esbuild 0.28.1 is required");
 const strip={name:"strip-test-modules",setup(b){b.onResolve({filter:/\.test(?:\.js)?$/},a=>({path:a.path,namespace:"test-stub"}));b.onLoad({filter:/.*/,namespace:"test-stub"},()=>({contents:"module.exports = Object.freeze({});",loader:"js"}));}};
